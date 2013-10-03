@@ -5,36 +5,23 @@ CRED=""
 IMPORTE=
 TOTAL_ROW=$(wc -l $1)
 PROC=$!
-echo "Total lines $TOTAL_ROW"
-#[ "$2" = "-r" ] && CHAR="[A-Z]" 
+
 while IFS= read lin
 do
-#  echo "$lin"
-#  echo $lin | cut -c42-48
   if [ ! -z $(echo "$lin" | cut -c42-48 | egrep -o "[A-Z][0-9]{6}") ]
   then
-    #echo $lin | cut -c42-48 | egrep -o "[A-Z][0-9]{6}"
-    CRED=$(echo "$lin" | cut -c42-48)
-    GRADO=$(echo "$lin" | cut -c34-35)
+    CRED=${lin:41:7}
+    GRADO=${lin:33:2}
   fi
 
   if [ ! -z $(echo "$lin" | cut -c4-6 | egrep -q '^[0-9]{3}' && echo 1) ]
   then
-    CODIGO=$(echo "$lin" | cut -c4-6)
+    CODIGO=${lin:3:3}
     IMPORTE=$(echo "$lin" | cut -c40-48 | tr -d ' ' )
     NEGATIVE=${lin:48:1}
     echo $CRED ";" $GRADO ";" $CODIGO ";"$NEGATIVE$IMPORTE
   fi
 
-
-  #echo $CRED " " $GRADO
-  #if [ ! -z $(echo $lin | egrep -q '^[0-9]{6}' && echo 1) ] 
-  #then
-  #  CODIGO=$(echo $lin | egrep -o '^[0-9]{6}')
-  #  IMPORTE=$(echo $lin | egrep -o '[0-9]{1,5}\.[0-9]{2}')
-  #  echo $CRED ";" $GRADO ";" $CODIGO ";" $IMPORTE
-  #fi
-  #echo $GRADO
   COUNT=$((COUNT +1))
   [ $((COUNT % 1000)) -eq 0 ] && echo "Progress $COUNT over $TOTAL_ROW" > parser_stat_$PROC
 done < $1
