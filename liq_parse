@@ -8,7 +8,10 @@ echo "Total lines $TOTAL_ROW"
 [ "$2" = "-r" ] && CHAR="[A-Z]"
 while read lin
 do
-  [ ! -z $(echo $lin | grep -q Legajo && echo 1)  ] && CRED=$(echo $lin | grep Legajo | egrep -o "$CHAR[0-9]{6}")
+  #[ ! -z $(echo $lin | grep -q Legajo && echo 1)  ] && CRED=$(echo $lin | grep Legajo | egrep -o "$CHAR[0-9]{6}")
+  _CRED_=$(echo $lin | grep Legajo | egrep -o "$CHAR[0-9]{6}")
+  [ ! -z $_CRED_ ] && CRED=$_CRED_
+
   if [ ! -z $(echo $lin | grep -q '^Categor' && echo 1) ]
   then
     #GRADO=$(echo $lin | sed -e 's/Categor?a: \(.*\) Grupo/\1/g')
@@ -28,3 +31,5 @@ do
   COUNT=$((COUNT +1))
   [ $((COUNT % 1000)) -eq 0 ] && echo "Progress $COUNT over $TOTAL_ROW" > parser_stat_$PROC
 done < $1
+
+echo "DONE: $COUNT over $TOTAL_ROW" > parser_stat_$PROC
