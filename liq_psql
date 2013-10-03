@@ -1,0 +1,54 @@
+#!/bin/bash
+COUNT=1
+GRADO=""
+CRED=""
+IMPORTE=
+TOTAL_ROW=$(wc -l $1)
+PROC=$!
+
+echo "RUNNING" > parser_stat_$PROC
+while IFS= read lin
+do
+  PREV=$FLAG
+  _RUN=false
+  FLAG=false
+  INIT=false
+  if [ ! -z $(echo "$lin" | cut -c42-48 | egrep -o "0[0-9]{5}") ]
+  then
+    INIT=true
+    CRED=${lin:41:7}
+    GRADO=${lin:33:2}
+    QUERY="UPDATE pivoted SET "
+  else
+    INIT=false
+  fi
+
+  if [ ! -z $(echo "$lin" | cut -c4-6 | egrep -q '^[0-9]{3}' && echo 1) ]
+  then
+    FLAG=true
+    CODIGO=${lin:3:3}
+    IMPORTE=$(echo "$lin" | cut -c40-48 | tr -d ' ' )
+    NEGATIVE=${lin:48:1}
+    #echo $CRED ";" $GRADO ";" $CODIGO ";"$NEGATIVE$IMPORTE
+    #echo " $QUERY" " " "$CODIGO =" $NEGATIVE$IMPORTE","
+    export QUERY=" $QUERY \"$CODIGO\" = $NEGATIVE$IMPORTE ,"
+  else
+    FLAG=false
+  fi
+
+  if [ "$PREV" == true ]  && [ "$FLAG" == false ] ;
+  then
+    _RUN=true
+  fi
+
+  if [ $_RUN == true ] &&  [ ! -z $CRED ] ;
+  then
+    export QUERY=" $QUERY  1 = 1 WHERE cred =  $CRED"
+    echo $QUERY
+  fi
+
+  #COUNT=$((COUNT +1))
+  #[ $((COUNT % 1000)) -eq 0 ] && echo "Progress $COUNT over $TOTAL_ROW" > parser_stat_$PROC
+done < $1
+#echo "Done $COUNT over $TOTAL_ROW" > parser_stat_$PROC
+echo "DONE" > parser_stat_$PROC
