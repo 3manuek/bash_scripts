@@ -1,0 +1,31 @@
+#!/bin/bash
+COUNT=1
+GRADO=""
+CRED=""
+IMPORTE=
+TOTAL_ROW=$(wc -l $1)
+PROC=$1
+
+while IFS= read lin
+do
+  if [ ! -z $(echo "$lin" | cut -c42-48 | egrep -o "0[0-9]{5}\s") ]
+  then
+    CRED_=${lin:41:7}
+    CRED=$(echo $CRED_ | tr -d ' ')
+    GRADO=${lin:33:2}
+  fi
+
+  if [ ! -z $(echo "$lin" | cut -c4-6 | egrep -q '^[0-9]{3}' && echo 1) ]
+  then
+    #CODIGO=${lin:3:3}
+    _CODIGO_=${lin:2:4}
+    CODIGO=$(echo $_CODIGO_ | tr -d ' ')
+    IMPORTE=$(echo "$lin" | cut -c40-48 | tr -d ' ' | sed 's/\.//g' | sed 's/,/\./g' )
+    NEGATIVE=${lin:48:1}
+    echo $CRED "," $GRADO "," $CODIGO ","$NEGATIVE$IMPORTE
+  fi
+
+  COUNT=$((COUNT +1))
+  [ $((COUNT % 1000)) -eq 0 ] && echo "Progress $COUNT over $TOTAL_ROW" > parser_stat_$PROC
+done < $1
+echo "Done $COUNT over $TOTAL_ROW" > parser_stat_$PROC
