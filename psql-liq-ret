@@ -31,7 +31,7 @@ do
     IMPORTE=$(echo "$lin" | cut -c40-48  | sed 's/\.//g' | sed 's/,/\./g' )
     NEGATIVE=${lin:48:1}
     #echo $CRED ";" $GRADO ";" $CODIGO ";"$NEGATIVE$IMPORTE
-     psql -Upostgres spf <<_EOF_
+    psql -Upostgres -p5433 spf <<_EOF_
 INSERT INTO ret VALUES ('$CRED', $GRADO, $CODIGO, $NEGATIVE$IMPORTE )
 _EOF_
 
