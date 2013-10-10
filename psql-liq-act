@@ -14,8 +14,8 @@ do
   #if [ ! -z $(echo "$lin" | cut -c42-48 | egrep -o "0[0-9]{5}[[:space:]]") ]
   if [[ $PARSE =~ $REGEXP ]]
   then
-    CRED_=${lin:41:7}
-    CRED=$(echo $CRED_ | tr -d ' ')
+    CRED=${lin:41:7}
+    #CRED=$(echo $CRED_ | tr -d ' ')
     GRADO=${lin:33:2}
   fi
 
