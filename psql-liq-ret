@@ -1,0 +1,43 @@
+#!/bin/bash
+COUNT=1
+GRADO=""
+CRED=""
+IMPORTE=
+TOTAL_ROW=$(wc -l $1)
+PROC=$1
+#[ "$2" = "-r" ] && RET="[A-Z]" || RET="0"
+REGEXP="[A-Z][0-9]{6}[[:space:]]"
+REGEXP_CODE="[0-9]{3}"
+
+
+while IFS= read lin
+do
+
+  PARSE=${lin:41:8}
+#  if [ ! -z $(echo "$lin" | cut -c42-48 | egrep -o "[A-Z][0-9]{6}") ]
+  if [[ $PARSE =~ $REGEXP ]]
+  then
+    CRED_=${lin:41:7}
+    CRED=$(echo $CRED_ | tr -d ' ')
+    GRADO=${lin:33:2}
+  fi
+
+
+  PARSE=${lin:3:3}
+#  if [ ! -z $(echo "$lin" | cut -c4-6 | egrep -q '^[0-9]{3}' && echo 1) ]
+  if [[ $PARSE =~ $REGEXP_CODE ]]
+  then
+    CODIGO=${lin:2:4}
+    IMPORTE=$(echo "$lin" | cut -c40-48  | sed 's/\.//g' | sed 's/,/\./g' )
+    NEGATIVE=${lin:48:1}
+    #echo $CRED ";" $GRADO ";" $CODIGO ";"$NEGATIVE$IMPORTE
+     psql -Upostgres spf <<_EOF_
+INSERT INTO ret VALUES ('$CRED', $GRADO, $CODIGO, $NEGATIVE$IMPORTE )
+_EOF_
+
+  fi
+
+  #COUNT=$((COUNT +1))
+  #[ $((COUNT % 1000)) -eq 0 ] && echo "Progress $COUNT over $TOTAL_ROW" > parser_stat_$PROC
+done < $1
+echo "Done $COUNT over $TOTAL_ROW" > parser_stat_$PROC
