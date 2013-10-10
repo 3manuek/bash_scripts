@@ -1,0 +1,8 @@
+
+
+A better algorithm is needed here. I was thinking something like this:
+
+- Parse by groups 
+- Send a group to a background worker to be parsed and sent to the DB in backuground
+
+Last psql* scripts run with 5x performance over Pg 9.3 without secure data. 
