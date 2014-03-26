@@ -315,10 +315,10 @@ sub testdecodingcheck
     #(mkdir $tmp_root || die $!) unless -d $tmp_root;
     
     chdir "../../../contrib/test_decoding";
-    print "Checking $module\n";
+    #print "Checking $module\n";
     my @tests = fetchTests();
     my @opts  = fetchRegressOpts();
-    print "@tests";
+    print @tests $#tests;
     print "@opts";
     
     #my @args  = (
