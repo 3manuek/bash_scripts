@@ -31,7 +31,7 @@ if (-e "src/tools/msvc/buildenv.pl")
 
 my $what = shift || "";
 if ($what =~
-/^(check|installcheck|plcheck|contribcheck|ecpgcheck|isolationcheck|upgradecheck)$/i
+/^(check|installcheck|plcheck|contribcheck|ecpgcheck|isolationcheck|upgradecheck|testdecodingcheck)$/i
   )
 {
 	$what = uc $what;
@@ -306,6 +306,34 @@ sub upgradecheck
 		print "dumps not identical!\n";
 		exit(1);
 	}
+}
+
+sub testdecodingcheck
+{
+    #$ENV{PGPORT} ||= 50432;
+	#my $tmp_root = "$topdir/contrib/test_decoding";
+    #(mkdir $tmp_root || die $!) unless -d $tmp_root;
+    
+    chdir "../../../contrib/test_decoding";
+    print "Checking $module\n";
+    my @tests = fetchTests();
+    my @opts  = fetchRegressOpts();
+    print "@tests";
+    print "@opts";
+    
+    #my @args  = (
+    #"../../$Config/pg_regress/pg_regress",
+    #"--psqldir=../../$Config/psql",
+    #"--dbname=contrib_regression", @opts, @tests);
+    #system(@args);
+    
+# ../../src/test/regress/pg_regress --inputdir=. --temp-install=./tmp_check --top-builddir=../..    \
+#	    --temp-config ../../contrib/test_decoding/logical.conf \
+#	    --temp-install=./tmp_check \
+#	    --extra-install=contrib/test_decoding \
+#	    ddl rewrite toast permissions decoding_in_xact binary
+
+
 }
 
 sub fetchRegressOpts
