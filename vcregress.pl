@@ -333,7 +333,7 @@ sub testdecodingcheck
 	@tests );
 	system(@args);
     my $status = $? >> 8;
-    $mstat ||= $status;
+    #$mstat ||= $status;
 	exit $mstat if $mstat;
 
     
