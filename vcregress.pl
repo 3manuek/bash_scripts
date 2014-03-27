@@ -318,6 +318,11 @@ sub testdecodingcheck
     
     my @args  = (
     "../../$Config/pg_regress/pg_regress",
+    "--dlpath=.",
+    "--psqldir=../../../$Config/psql",
+    "--schedule=${schedule}_schedule",
+    "--encoding=SQL_ASCII",
+    "--no-locale",
     "--inputdir=.",
 	" --top-builddir=../..",
 	"--temp-install=./tmp_check",
