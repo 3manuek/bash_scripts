@@ -311,7 +311,7 @@ sub upgradecheck
 sub testdecodingcheck
 {
 
-    #chdir "$topdir/contrib/test_decoding";
+    chdir "$topdir/contrib/test_decoding";
     my $mstat = 0;
     my @tests = fetchTests();
     my @opts  = fetchRegressOpts();
