@@ -310,22 +310,27 @@ sub upgradecheck
 
 sub testdecodingcheck
 {
-    #$ENV{PGPORT} ||= 50432;
-	#my $tmp_root = "$topdir/contrib/test_decoding";
-    #(mkdir $tmp_root || die $!) unless -d $tmp_root;
-    
-    chdir "../../../contrib/test_decoding";
-    #print "Checking $module\n";
+
+    chdir "$topdir/contrib/test_decoding";
+   
     my @tests = fetchTests();
     my @opts  = fetchRegressOpts();
-    print @tests $#tests;
-    print "@opts";
     
-    #my @args  = (
-    #"../../$Config/pg_regress/pg_regress",
-    #"--psqldir=../../$Config/psql",
-    #"--dbname=contrib_regression", @opts, @tests);
-    #system(@args);
+    my @args  = (
+    "../../$Config/pg_regress/pg_regress",
+    "--inputdir=.",
+	" --top-builddir=../..",
+	"--temp-install=./tmp_check",
+	"--temp-config logical.conf",
+	"--temp-install=./tmp_check",
+	" --extra-install=contrib/test_decoding",
+	@opts, 
+	@tests );
+	system(@args);
+    my $status = $? >> 8;
+    $mstat ||= $status;
+	exit $mstat if $mstat;
+
     
 # ../../src/test/regress/pg_regress --inputdir=. --temp-install=./tmp_check --top-builddir=../..    \
 #	    --temp-config ../../contrib/test_decoding/logical.conf \
