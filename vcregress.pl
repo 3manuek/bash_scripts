@@ -311,7 +311,7 @@ sub upgradecheck
 sub testdecodingcheck
 {
 
-    chdir "$topdir/contrib/test_decoding";
+    chdir "../../../contrib/test_decoding";
     my $mstat = 0;
     my @tests = fetchTests();
     my @opts  = fetchRegressOpts();
@@ -325,9 +325,9 @@ sub testdecodingcheck
     "--no-locale",
     "--inputdir=.",
 	#" --top-builddir=../..",
+	#"--temp-install=./tmp_check",
 	"--temp-install=./tmp_check",
-	"--temp-config logical.conf",
-	"--temp-install=./tmp_check",
+    "--temp-config=./logical.conf",
 	" --extra-install=contrib/test_decoding",
 	@opts, 
 	@tests );
