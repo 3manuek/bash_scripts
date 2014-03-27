@@ -311,7 +311,7 @@ sub upgradecheck
 sub testdecodingcheck
 {
 
-    chdir "$topdir/contrib/test_decoding";
+    #chdir "$topdir/contrib/test_decoding";
     my $mstat = 0;
     my @tests = fetchTests();
     my @opts  = fetchRegressOpts();
@@ -319,7 +319,7 @@ sub testdecodingcheck
     my @args  = (
     "../../$Config/pg_regress/pg_regress",
     "--dlpath=.",
-    "--psqldir=../../../$Config/psql",
+    "--psqldir=../../$Config/psql",
     "--schedule=${schedule}_schedule",
     "--encoding=SQL_ASCII",
     "--no-locale",
