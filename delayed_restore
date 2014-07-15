@@ -42,6 +42,12 @@ RECOVERY_DIR=/var/local/dbarchive
 #
 #restore_command = ''           # e.g. 'cp /mnt/server/archivedir/%f %p'
 
+usage(){
+	echo "Usage: $0 -D /var/local/dbarchive/%f -x %p -d 24"
+	echo "       -d 24 is the amount of delayed hours"
+	exit 1
+}
+ 
 
 while getopts 'D:d:x:' OPTION 
 do
