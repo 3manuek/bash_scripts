@@ -45,6 +45,7 @@ RECOVERY_DIR=/var/local/dbarchive
 usage(){
 	echo "Usage: $0 -D /var/local/dbarchive/%f -x %p -d 24"
 	echo "       -d 24 is the amount of delayed hours"
+	echo " restore_command = '$0  -D /var/local/dbarchive/%f -x %p -d 24'"
 	exit 1
 }
  
