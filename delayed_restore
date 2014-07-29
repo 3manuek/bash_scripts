@@ -42,6 +42,12 @@ RECOVERY_DIR=/var/local/dbarchive
 #
 #restore_command = ''           # e.g. 'cp /mnt/server/archivedir/%f %p'
 
+# TODO: Add option by left percentage:
+# [root@ip-10-5-167-133 ~]# df /dev/md10 | tail -n1 | awk '{ CALC=($3 * 100 /$2) ; print CALC}'
+#0.0800013
+#
+# Add uncompress option
+
 usage(){
 	echo "Usage: $0 -D /var/local/dbarchive/%f -x %p -d 24"
 	echo "       -d 24 is the amount of delayed hours"
@@ -79,6 +85,7 @@ touch -d "$_DATE_" $TIMEFILE || { echo "Check permissions on the $TMPDIR folder"
 if [ $RECFILE -ot $TIMEFILE ]
 then
   rm -f $TIMEFILE
+  # gzip -d ${RECFILE}.gz
   cp $RECFILE $XLOGDIR || { echo "Some error ocurred while copying. $?" ; exit 10 ;  }
 fi
 
