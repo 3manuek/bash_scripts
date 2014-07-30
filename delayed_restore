@@ -14,6 +14,7 @@
 
 # I recommend to use pg_archivecleanup for clean up the log files instead this file.
 
+# archive_cleanup_command = 'find /media/wal_archive/wals -type f -and -name "*.gz.done" -and -not -path "*/archive_status/*" -and -not -newer "/media/wal_archive/wals/%r.gz" -and -not -name "%r.gz.done" -maxdepth 1 -delete'
 
 TMPDIR=/tmp
 #_T_=$(basename ${0})
