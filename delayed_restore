@@ -46,7 +46,8 @@ RECOVERY_DIR=/var/local/dbarchive
 # [root@ip-10-5-167-133 ~]# df /dev/md10 | tail -n1 | awk '{ CALC=($3 * 100 /$2) ; print CALC}'
 #0.0800013
 #
-# Add uncompress option
+#  - Add uncompress option
+#  - Add option to avoid .done mark (when you have more than 1 instance recovering)
 
 usage(){
 	echo "Usage: $0 -D /var/local/dbarchive/%f -x %p -d 24"
@@ -56,7 +57,7 @@ usage(){
 }
  
 
-while getopts 'D:d:x:' OPTION 
+while getopts 'D:d:x:S:h' OPTION 
 do
   case $OPTION in
     D)
@@ -68,8 +69,14 @@ do
     d)
       DELAY=$OPTARG
       ;;
+    S)
+      SPACE_TS=$OPTARG
+      ;;
     h)
       usage
+      ;;
+    u)
+      NOTCOMPRESS=1
       ;;
     *)
       exit 1
@@ -77,19 +84,46 @@ do
   esac
 done
 
+if [ -z DELAY -o SPACE_TS ] ; then
+  echo "You need at least -S or -d option set"
+  exit 10
+fi
+
+#
+# This block is for delay with percentage threshold.
+#
+if [ ! -z SPACE_TS ] ; then
+  DIRNAME=$(dirname RECFILE)
+  OCC_PERC=$(df DIRNAME | tail -n1 | awk '{ CALC=($3 * 100 /$2) ; print CALC}' )
+  if [ $OCC_PERC -gt $SPACE_TS  -a  "$NOTCOMPRESS" != "1" ] ; then
+    gunzip -c "${RECFILE}.gz" > "$XLOGDIR" || { echo "Some error ocurred while copying. $?" ; exit 20 ;  } && mv "${RECFILE}.gz" "${RECFILE}.gz.done"
+  fi
+  if [ $OCC_PERC -gt $SPACE_TS  -a  "$NOTCOMPRESS" == "1" ] ; then
+    cp "${RECFILE}.gz" $XLOGDIR || { echo "Some error ocurred while copying. $?" ; exit 30 ;  } 
+  fi 
+fi
+
 _DATE_=$(date -d "$DELAY hours ago")
 touch -d "$_DATE_" $TIMEFILE || { echo "Check permissions on the $TMPDIR folder" ; exit 5 ; }
 
 #find $RECDIR -mtime $DELAYh -exec cp {} $XLOGDIR \;    ||  { echo "An error ocurred: $?" ; exit 3 ;  }
 
-if [ $RECFILE -ot $TIMEFILE ]
-then
-  rm -f $TIMEFILE
-  # gzip -d ${RECFILE}.gz
-  cp $RECFILE $XLOGDIR || { echo "Some error ocurred while copying. $?" ; exit 10 ;  }
-  #gunzip -c "${RECFILE}.gz" > "$XLOGDIR" || { echo "Some error ocurred while copying. $?" ; exit 10 ;  } && mv "${RECFILE}.gz" "${RECFILE}.gz.done"
 
+
+#
+# If the server goes down during recovery, it'll ask for old segments.
+# That's why we recheck those were in .done state
+#
+if [ -f "${RECFILE}.gz.done" ] ; then
+  # force-restore, no delay, or archive cleanup will mess up
+  rm -f "$TIMEFILE"
+  gunzip -c "${RECFILE}.gz.done" > "$XLOGDIR" || { echo "Some error ocurred while copying. $?" ; exit 10 ;  }
+else
+  if [ "${RECFILE}.gz" -ot "$TIMEFILE" ]
+  then
+    rm -f "$TIMEFILE"
+    gunzip -c "${RECFILE}.gz" > "$XLOGDIR" || { echo "Some error ocurred while copying. $?" ; exit 10 ;  } && mv "${RECFILE}.gz" "${RECFILE}.gz.done"
+  fi
 fi
-
 
 exit 0
