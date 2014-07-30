@@ -87,6 +87,8 @@ then
   rm -f $TIMEFILE
   # gzip -d ${RECFILE}.gz
   cp $RECFILE $XLOGDIR || { echo "Some error ocurred while copying. $?" ; exit 10 ;  }
+  #gunzip -c "${RECFILE}.gz" > "$XLOGDIR" || { echo "Some error ocurred while copying. $?" ; exit 10 ;  } && mv "${RECFILE}.gz" "${RECFILE}.gz.done"
+
 fi
 
 
