@@ -38,7 +38,8 @@ OPTIONS:
     -c                      Set log check (non available remotely or using -h option)
     -H                      THIS
     -t                      Tar log files. Name $TAR_FILE DEPRECATED (only 1 HTML output)
-    -b <psql dir>           That is if you want to execute an specific psql command location (several versions?). Your actual psql is under: $(whereis psql || echo "You don't have it." ) 
+    -b <psql dir>           You can specify a binary folder (several versions?). Your actual 
+                            psql is under: $(whereis psql || echo "Ops, you don't have it on the PATH." ) 
     -u <POSTGRES USER>      The database user Default= $DEF_PGUSER
     -p <port>               Not implemented yet. Default: $PORT
     -V                      Version $VERSION
