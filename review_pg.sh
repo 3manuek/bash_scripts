@@ -418,8 +418,11 @@ do
     t.tablename,\
     indexname,\
     c.reltuples AS num_rows,\
-    pg_size_pretty(pg_relation_size(quote_ident(t.tablename)::text)) AS table_size,\
-    pg_size_pretty(pg_relation_size(quote_ident(indexrelname)::text)) AS index_size,\
+    CASE WHEN c.relkind = 'r' THEN\
+      pg_size_pretty(pg_relation_size(t.schemaname ||'.'||quote_ident(t.tablename)::text)) \
+    WHEN c.relkind = 'i' THEN\
+      pg_size_pretty(pg_relation_size(quote_ident(indexrelname)::text))\
+    END as obj_size,\
     CASE WHEN x.is_unique = 1  THEN 'Y'\
        ELSE 'N'\
     END AS UNIQUE,\
