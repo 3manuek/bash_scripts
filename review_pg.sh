@@ -144,7 +144,7 @@ else
   echo >&2 "We recommend to install pg_config utility" 
 fi
 
-while getopts th:o:cb:u:VH optname
+while getopts th:o:cb:u:VvH optname
   do
     case "$optname" in
       "t")
@@ -175,6 +175,10 @@ while getopts th:o:cb:u:VH optname
       "V")
         echo $VERSION
         exit 0
+        ;;
+      "v")
+        echo VERBOSE MODE
+        DEBUG=1
         ;;
       *|"H")
         usage
@@ -210,6 +214,8 @@ _html_head_
 
 ## Cluster Info
 ###############
+
+[ $DEBUG  ] && echo CLUSTER INFO
 
 _html_nl_
 _html_title_ "Cluster configuration"
@@ -276,6 +282,8 @@ do
   _html_block_begin_ 
   _html_nl_
 
+  [ $DEBUG  ] && echo STARTING $i DATABASE
+
   _html_nl_
   _html_subtitle_ "Database stats:" 
 
@@ -283,6 +291,8 @@ do
       select *, (tup_returned+tup_fetched)/NULLIF(tup_inserted+tup_updated+tup_deleted,0)\
        || ' to 1' as Ratio_R_W \
        from pg_stat_database where datname like '$i'" >> $CG_LOG
+
+  [ $DEBUG  ] && echo ACTIVITY
 
   _html_nl_
   _html_subtitle_ "Activity in amounts: " 
@@ -296,6 +306,8 @@ do
       from pg_stat_user_tables st JOIN pg_statio_user_tables io USING (relid) \
       order by size desc limit 5"  >> $CG_LOG
 
+  [ $DEBUG  ] && echo STATISTICS  
+
   _html_nl_
   _html_subtitle_ "Candidates to increase the STATISTICS target" 
 
@@ -307,6 +319,7 @@ do
          and n_distinct between 100 and 500 and most_common_freqs[1] < 0.18  \
       order by n_distinct desc" >> $CG_LOG
 
+  [ $DEBUG  ] && echo DIRTY ROWS
 
   _html_nl_
   _html_subtitle_ "Dirty rows: " 
@@ -315,6 +328,8 @@ do
        pg_size_pretty(pg_relation_size(schemaname || '.' || quote_ident(relname))) as size \
        from pg_stat_user_tables order by n_dead_tup desc limit 5"  >> $CG_LOG
   
+  [ $DEBUG  ] && echo BIGGEST TABLES
+
   _html_nl_
   _html_subtitle_ "Biggest 10 tables: " 
 
@@ -323,6 +338,8 @@ do
        from pg_stat_user_tables order by pg_relation_size(schemaname || '.' || quote_ident(relname)) desc \
        limit 10"  >> $CG_LOG
 
+  [ $DEBUG  ] && echo INHERITED TABLES
+
   _html_nl_
   _html_subtitle_ "Inherited tables size: " 
 
@@ -330,6 +347,8 @@ do
      pg_size_pretty(sum(pg_relation_size(inhrelid::regclass))::bigint) \
      from pg_inherits \
      group by 1 order by 2 desc" >> $CG_LOG
+
+  [ $DEBUG  ] && echo DIRTY ROWS
 
   _html_nl_
   _html_subtitle_ "Dirty rows: " 
@@ -343,6 +362,8 @@ do
             pg_size_pretty(sum(pg_relation_size(schemaname || '.' || relname))::bigint) \
             FROM pg_stat_user_tables;" >> $CG_LOG
   
+  [ $DEBUG  ] && echo FILLFACTOR
+
   _html_nl_
   _html_subtitle_ "Update ratio - FILLFACTOR enhacements: " 
   
@@ -358,6 +379,8 @@ do
         ON n.nspname = t.schemaname AND c.relname = t.relname \
    ORDER BY n_tup_upd desc LIMIT 20;" >> $CG_LOG
    
+   [ $DEBUG  ] && echo DUPLICATED IX
+
    _html_nl_ 
    _html_subtitle_ "Duplicated indexes:" 
    
@@ -372,6 +395,8 @@ do
    GROUP BY KEY HAVING count(*)>1 \
    ORDER BY sum(pg_relation_size(idx)) DESC" >> $CG_LOG
    
+   [ $DEBUG  ] && echo IX SUMMARY
+
    _html_nl_
    _html_subtitle_ "Index Summary:" 
 
@@ -411,6 +436,8 @@ do
   GROUP BY pg_class.relname, pg_class.reltuples, x.is_unique\
   ORDER BY 2;" >> $CG_LOG
 
+  [ $DEBUG  ] && echo IX STATS
+
   _html_nl_
   _html_subtitle_ "Index Statistics:" 
 
@@ -447,7 +474,8 @@ do
     ON t.tablename = foo.ctablename\
   -- WHERE t.schemaname='public'\
   ORDER BY 1,2 DESC; " >> $CG_LOG
-
+  
+  [ $DEBUG  ] && echo TABLE CACHE HIT RATIO
 
   _html_nl_
   _html_subtitle_ "Actual Table cache hit ratio"
@@ -455,6 +483,8 @@ do
     'cache hit rate' AS name,\
      sum(heap_blks_hit) / nullif((sum(heap_blks_hit) + sum(heap_blks_read)),0) AS ratio \
      FROM pg_statio_user_tables; " >> $CG_LOG
+
+  [ $DEBUG  ] && echo IX CACHE HIT RATIO
 
   _html_nl_
   _html_subtitle_ "Actual Index cache hit ratio"
