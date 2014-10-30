@@ -273,7 +273,7 @@ _html_close_
 # Iterates through all the databases of the cluster
 ###################################################
 
-for i in $($PSQL -U $PGUSER $PGHOST template1 -Atc "\
+for i in $($PSQL -U $PGUSER $PGHOST template1 -Atc " SET backslash_quote = 'off'; \
        select datname from pg_database\
        where datname !~ 'template0|template1|postgres' ")
 do
@@ -354,12 +354,12 @@ do
   _html_subtitle_ "Dirty rows: " 
 
    $PSQL -U $PGUSER $i $PGHOST $HTML -c "select relname, n_live_tup, n_dead_tup, \
-            pg_size_pretty(pg_relation_size(schemaname || '.' || relname)) \
+            pg_size_pretty(pg_relation_size(schemaname || '.' || quote_ident(relname))) \
             FROM pg_stat_user_tables \
             ORDER by n_dead_tup desc limit 10; \
             SELECT sum(n_live_tup) as Total_Live_rows, sum(n_dead_tup) as Total_Dead_Rows, \
             round(sum(n_dead_tup)*100/nullif(sum(n_live_tup),0),2) as Percentage_of_Dead_Rows, \
-            pg_size_pretty(sum(pg_relation_size(schemaname || '.' || relname))::bigint) \
+            pg_size_pretty(sum(pg_relation_size(schemaname || '.' || quote_ident(relname)))::bigint) \
             FROM pg_stat_user_tables;" >> $CG_LOG
   
   [ $DEBUG  ] && echo FILLFACTOR
