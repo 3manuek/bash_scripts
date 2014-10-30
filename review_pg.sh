@@ -275,7 +275,7 @@ _html_close_
 
 for i in $($PSQL -U $PGUSER $PGHOST template1 -Atc " SET backslash_quote = 'off'; \
        select datname from pg_database\
-       where datname !~ 'template0|template1|postgres' ")
+        where datname !~ 'template0|template1|postgres' ")
 do
   _html_nl_
   _html_title_ " ========== DATABASE  $i ============== " 
