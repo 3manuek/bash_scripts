@@ -3,13 +3,14 @@
 # Basic Postgres info collector script.
 #   
 # 
-# BSD License . Palomino team.
+# BSD License . 
 # Author: Emanuel Calvo
 #
 # TODO:
-# - Add better output (More! Now is HTML)
 # - Suggestions according the findings (That we'll be included in other tool)
 # - Master/Slave detection and status (already do this)
+# - Get some OS details, blockread info, etc. The idea is to avoid the use of any
+#   privileges on the system.
 
 VERSION="1.4b"
 
@@ -29,7 +30,7 @@ usage()
 cat << EOF
 usage: $0 options
 
-Postgres review script. Palomino Tools team.
+Postgres review script. 
 
 
 OPTIONS:
