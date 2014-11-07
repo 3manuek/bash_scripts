@@ -238,6 +238,15 @@ $PSQL -U $PGUSER $PGHOST $HTML template1 -xc "select psd.*, pg_size_pretty(pg_da
 _html_block_end_
 
 _html_nl_
+_html_title_ "Background Writer actual details:"
+_html_nl_
+_html_block_begin_
+$PSQL -U $PGUSER $PGHOST $HTML template1 -xc "SELECT * FROM pg_stat_bgwriter" >> $CG_LOG
+_html_block_end_
+
+
+
+_html_nl_
 _html_title_ "Instance configuration:" 
 _html_nl_
 _html_block_begin_
