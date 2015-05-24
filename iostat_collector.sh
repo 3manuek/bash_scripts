@@ -8,7 +8,7 @@ numDevices=$(expr $lineCount - 7);
 interval=2
 deviceFile=device_stats
 
-iostat $interval -x -t |
+iostat $interval -m -x -t |
 awk -v awkDeviceFile=$deviceFile -v awkNumDevices=$numDevices '
 BEGIN {
 	print "date/time,device,rrqm/s,wrqm/s,r/s,w/s,rsec/s,wsec/s,avgrq-sz,avgqu-sz,await,svctm,%util" > awkDeviceFile
