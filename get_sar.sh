@@ -23,3 +23,20 @@ done
 
 tar cf sars.tar $OUTDIR
 
+
+#     -B  $WORK_FILE_PAGING_STATS     
+#     -b  $WORK_FILE_IO_TRANSFER_RATE 
+#     -d  $WORK_FILE_DEVICE_ACTIVITY  
+#     -H  $WORK_FILE_HUGE_PAGES 
+#     -I SUM $WORK_FILE_INTERRUPTION -I SUM   (ALL is harder to parse)
+#            $WORK_FILE_CPUS_ALL  #NO OPTIONS
+#     -q $WORK_FILE_LOAD 
+#     -R $WORK_FILE_MEMORY 
+#     -r $WORK_FILE_MEMORY_UTIL 
+#     -S $WORK_FILE_SWAP 
+#     -u ALL $WORK_FILE_CPU_FULL 
+#     -v $WORK_FILE_INODE_KER
+#     -w $WORK_CONTEXT_SWITCH
+#     -W $WORK_SWAP_WRITES
+      
+      
